@@ -34,7 +34,7 @@ export default function Landing() {
             <br className="hidden sm:block" /> Walk into appointments ready.
           </h1>
           <p className="mx-auto mt-5 max-w-lg text-balance text-base text-muted-foreground sm:text-lg">
-            Tap the body. Pick a type. Move a slider. PainPoint turns 42 days of nuance into a
+            Tap the body. Pick a type. Move a slider. PainPoint turns months of nuance into a
             clinical summary your doctor can read in 20 seconds — and the questions you should
             actually ask.
           </p>
@@ -84,7 +84,7 @@ export default function Landing() {
             Pain is subjective. Your data shouldn't be.
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-center text-muted-foreground">
-            Patients get a 15-minute appointment every six weeks and are asked to describe 42 days
+            Patients get a 15-minute appointment every six weeks and are asked to describe months
             of experience on a 1-to-10 scale. Critical patterns get lost. PainPoint captures them
             while they're fresh — and hands them back when you need them most.
           </p>
