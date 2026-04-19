@@ -1,3 +1,3 @@
-# Welcome to your Lovable project
+# Link
 
-TODO: Document your project here
+https://painp0int.lovable.app
