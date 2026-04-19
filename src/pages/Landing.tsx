@@ -30,7 +30,7 @@ export default function Landing() {
             For people who live with chronic pain
           </div>
           <h1 className="text-balance text-4xl font-semibold tracking-tight sm:text-6xl">
-            Track pain in <span className="text-primary">15 seconds.</span>
+            Track pain in <span className="text-primary">10 seconds.</span>
             <br className="hidden sm:block" /> Walk into appointments ready.
           </h1>
           <p className="mx-auto mt-5 max-w-lg text-balance text-base text-muted-foreground sm:text-lg">
