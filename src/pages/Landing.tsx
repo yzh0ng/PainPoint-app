@@ -27,7 +27,7 @@ export default function Landing() {
         <div className="mx-auto max-w-2xl px-6 py-16 text-center sm:py-24">
           <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-border bg-card/70 px-3 py-1 text-xs font-medium text-muted-foreground backdrop-blur">
             <Sparkles className="h-3.5 w-3.5 text-primary" />
-            For people who live with chronic pain
+            Built for patients, understood by doctors
           </div>
           <h1 className="text-balance text-4xl font-semibold tracking-tight sm:text-6xl">
             Track pain in <span className="text-primary">10 seconds.</span>
