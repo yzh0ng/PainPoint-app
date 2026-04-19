@@ -7,6 +7,7 @@ import { QuickLogPopover } from "@/components/QuickLogPopover";
 import { regionLabel, intensityColor } from "@/lib/painTaxonomy";
 import { Flame, TrendingDown, Minus, TrendingUp } from "lucide-react";
 import { format, isToday, subDays } from "date-fns";
+import { cn } from "@/lib/utils";
 
 type Log = {
   id: string;
@@ -20,6 +21,7 @@ export default function Today() {
   const { user } = useAuth();
   const [sheetOpen, setSheetOpen] = useState(false);
   const [activeRegion, setActiveRegion] = useState<string | null>(null);
+  const [bodyView, setBodyView] = useState<"front" | "back">("front");
   const [name, setName] = useState<string | null>(null);
   const [logs, setLogs] = useState<Log[]>([]);
 
@@ -62,13 +64,7 @@ export default function Today() {
     return s;
   }, [logs]);
 
-  const heat = useMemo(() => {
-    const m: Record<string, number> = {};
-    for (const l of todayLogs) {
-      m[l.region] = Math.max(m[l.region] ?? 0, l.intensity);
-    }
-    return m;
-  }, [todayLogs]);
+  // (heatmap on the figure removed — keeps the character clean and cute)
 
   const avgToday = todayLogs.length
     ? Math.round((todayLogs.reduce((s, l) => s + l.intensity, 0) / todayLogs.length) * 10) / 10
@@ -158,18 +154,37 @@ export default function Today() {
       </div>
 
       {/* The figure IS the action surface */}
-      <section className="relative rounded-[32px] border border-border/60 bg-paper px-4 pb-2 pt-6 shadow-paper">
+      <section className="relative rounded-[32px] border border-border/60 bg-paper px-4 pb-4 pt-6 shadow-paper">
         <p className="mb-1 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
           Tap where it hurts
         </p>
-        <p className="mx-auto mb-2 max-w-[260px] text-center text-xs text-muted-foreground/80">
+        <p className="mx-auto mb-3 max-w-[260px] text-center text-xs text-muted-foreground/80">
           Anywhere on the body — we'll save it in a couple of taps.
         </p>
+
+        {/* Front / Back toggle */}
+        <div className="mx-auto mb-2 flex w-fit items-center gap-1 rounded-full border border-border/60 bg-card p-1 shadow-soft">
+          {(["front", "back"] as const).map((v) => (
+            <button
+              key={v}
+              onClick={() => setBodyView(v)}
+              className={cn(
+                "rounded-full px-4 py-1.5 text-xs font-semibold capitalize transition-all",
+                bodyView === v
+                  ? "bg-gradient-warm text-primary-foreground shadow-glow"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+              aria-pressed={bodyView === v}
+            >
+              {v}
+            </button>
+          ))}
+        </div>
+
         <BodyDiagram
-          ambient
+          view={bodyView}
           selected={activeRegion}
           onSelect={handleRegionTap}
-          highlights={heat}
         />
       </section>
 
