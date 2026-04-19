@@ -1,1 +1,4 @@
 project_id = "ieqzuijoaprpuxcomove"
+
+[functions.generate-report]
+verify_jwt = false
