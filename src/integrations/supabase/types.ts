@@ -14,7 +14,146 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      med_doses: {
+        Row: {
+          created_at: string
+          effect: number | null
+          id: string
+          medication_id: string
+          note: string | null
+          taken_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          effect?: number | null
+          id?: string
+          medication_id: string
+          note?: string | null
+          taken_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          effect?: number | null
+          id?: string
+          medication_id?: string
+          note?: string | null
+          taken_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "med_doses_medication_id_fkey"
+            columns: ["medication_id"]
+            isOneToOne: false
+            referencedRelation: "medications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      medications: {
+        Row: {
+          active: boolean
+          created_at: string
+          dose: string | null
+          id: string
+          name: string
+          notes: string | null
+          user_id: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          dose?: string | null
+          id?: string
+          name: string
+          notes?: string | null
+          user_id: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          dose?: string | null
+          id?: string
+          name?: string
+          notes?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      pain_logs: {
+        Row: {
+          created_at: string
+          id: string
+          intensity: number
+          logged_at: string
+          note: string | null
+          pain_type: Database["public"]["Enums"]["pain_type"]
+          region: string
+          side: string | null
+          trigger: Database["public"]["Enums"]["pain_trigger"] | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          intensity: number
+          logged_at?: string
+          note?: string | null
+          pain_type: Database["public"]["Enums"]["pain_type"]
+          region: string
+          side?: string | null
+          trigger?: Database["public"]["Enums"]["pain_trigger"] | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          intensity?: number
+          logged_at?: string
+          note?: string | null
+          pain_type?: Database["public"]["Enums"]["pain_type"]
+          region?: string
+          side?: string | null
+          trigger?: Database["public"]["Enums"]["pain_trigger"] | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          condition: Database["public"]["Enums"]["pain_condition"]
+          created_at: string
+          display_name: string | null
+          id: string
+          reminder_time: string | null
+          reminders_enabled: boolean
+          timezone: string | null
+          updated_at: string
+        }
+        Insert: {
+          condition?: Database["public"]["Enums"]["pain_condition"]
+          created_at?: string
+          display_name?: string | null
+          id: string
+          reminder_time?: string | null
+          reminders_enabled?: boolean
+          timezone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          condition?: Database["public"]["Enums"]["pain_condition"]
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          reminder_time?: string | null
+          reminders_enabled?: boolean
+          timezone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +162,37 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      pain_condition:
+        | "endometriosis"
+        | "fibromyalgia"
+        | "lower_back"
+        | "migraine"
+        | "post_surgical"
+        | "arthritis"
+        | "other"
+        | "unspecified"
+      pain_trigger:
+        | "stress"
+        | "sleep"
+        | "exercise"
+        | "weather"
+        | "food"
+        | "menstrual"
+        | "posture"
+        | "work"
+        | "none"
+        | "other"
+      pain_type:
+        | "sharp"
+        | "dull"
+        | "burning"
+        | "throbbing"
+        | "aching"
+        | "stabbing"
+        | "cramping"
+        | "tingling"
+        | "pressure"
+        | "other"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +319,41 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      pain_condition: [
+        "endometriosis",
+        "fibromyalgia",
+        "lower_back",
+        "migraine",
+        "post_surgical",
+        "arthritis",
+        "other",
+        "unspecified",
+      ],
+      pain_trigger: [
+        "stress",
+        "sleep",
+        "exercise",
+        "weather",
+        "food",
+        "menstrual",
+        "posture",
+        "work",
+        "none",
+        "other",
+      ],
+      pain_type: [
+        "sharp",
+        "dull",
+        "burning",
+        "throbbing",
+        "aching",
+        "stabbing",
+        "cramping",
+        "tingling",
+        "pressure",
+        "other",
+      ],
+    },
   },
 } as const
