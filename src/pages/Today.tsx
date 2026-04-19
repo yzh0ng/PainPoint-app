@@ -3,8 +3,9 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { LogSheet } from "@/components/LogSheet";
 import { BodyDiagram } from "@/components/BodyDiagram";
+import { QuickLogPopover } from "@/components/QuickLogPopover";
 import { regionLabel, intensityColor } from "@/lib/painTaxonomy";
-import { Plus, Flame, TrendingDown, Minus } from "lucide-react";
+import { Flame, TrendingDown, Minus, TrendingUp } from "lucide-react";
 import { format, isToday, subDays } from "date-fns";
 
 type Log = {
@@ -17,7 +18,8 @@ type Log = {
 
 export default function Today() {
   const { user } = useAuth();
-  const [open, setOpen] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [activeRegion, setActiveRegion] = useState<string | null>(null);
   const [name, setName] = useState<string | null>(null);
   const [logs, setLogs] = useState<Log[]>([]);
 
@@ -49,7 +51,6 @@ export default function Today() {
   );
 
   const streak = useMemo(() => {
-    // Count consecutive days back from today with at least one log
     const days = new Set(logs.map((l) => format(new Date(l.logged_at), "yyyy-MM-dd")));
     let s = 0;
     for (let i = 0; i < 30; i++) {
@@ -61,7 +62,6 @@ export default function Today() {
     return s;
   }, [logs]);
 
-  // Today heatmap: peak intensity per region
   const heat = useMemo(() => {
     const m: Record<string, number> = {};
     for (const l of todayLogs) {
@@ -74,10 +74,11 @@ export default function Today() {
     ? Math.round((todayLogs.reduce((s, l) => s + l.intensity, 0) / todayLogs.length) * 10) / 10
     : null;
 
-  // Trend: yesterday vs today avg
   const yesterday = useMemo(() => {
     const ys = logs.filter(
-      (l) => format(new Date(l.logged_at), "yyyy-MM-dd") === format(subDays(new Date(), 1), "yyyy-MM-dd")
+      (l) =>
+        format(new Date(l.logged_at), "yyyy-MM-dd") ===
+        format(subDays(new Date(), 1), "yyyy-MM-dd")
     );
     if (!ys.length) return null;
     return ys.reduce((s, l) => s + l.intensity, 0) / ys.length;
@@ -90,17 +91,35 @@ export default function Today() {
     return "Good evening";
   })();
 
+  const handleRegionTap = (id: string) => {
+    setActiveRegion(id);
+    if (navigator.vibrate) navigator.vibrate(8);
+  };
+
+  const handleSaved = () => {
+    setActiveRegion(null);
+    load();
+  };
+
+  const handleMoreDetails = () => {
+    setActiveRegion(null);
+    setSheetOpen(true);
+  };
+
   return (
-    <div className="space-y-6 animate-fade-in">
-      <header>
-        <p className="text-sm text-muted-foreground">{greeting}{name ? `, ${name}` : ""}.</p>
-        <h1 className="mt-1 text-2xl font-semibold tracking-tight">
+    <div className="animate-fade-in space-y-5 pb-24">
+      <header className="px-1">
+        <p className="text-sm text-muted-foreground">
+          {greeting}{name ? `, ${name}` : ""}.
+        </p>
+        <h1 className="mt-1 font-display text-[28px] font-medium leading-tight text-foreground">
           {todayLogs.length === 0
-            ? "How are you feeling today?"
+            ? "Where does it ache today?"
             : `${todayLogs.length} log${todayLogs.length === 1 ? "" : "s"} so far today`}
         </h1>
       </header>
 
+      {/* Stats */}
       <div className="grid grid-cols-3 gap-3">
         <StatCard
           label="Streak"
@@ -131,36 +150,46 @@ export default function Today() {
               ? Minus
               : avgToday < yesterday
               ? TrendingDown
+              : avgToday > yesterday
+              ? TrendingUp
               : Minus
           }
         />
       </div>
 
-      <section className="pp-card">
-        <h2 className="mb-3 text-sm font-semibold text-muted-foreground">Today on the body</h2>
-        {Object.keys(heat).length === 0 ? (
-          <div className="py-4 text-center text-sm text-muted-foreground">
-            Tap below to log your first pain of the day.
-          </div>
-        ) : (
-          <BodyDiagram onSelect={() => setOpen(true)} highlights={heat} />
-        )}
+      {/* The figure IS the action surface */}
+      <section className="relative rounded-[32px] border border-border/60 bg-paper px-4 pb-2 pt-6 shadow-paper">
+        <p className="mb-1 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+          Tap where it hurts
+        </p>
+        <p className="mx-auto mb-2 max-w-[260px] text-center text-xs text-muted-foreground/80">
+          Anywhere on the body — we'll save it in a couple of taps.
+        </p>
+        <BodyDiagram
+          ambient
+          selected={activeRegion}
+          onSelect={handleRegionTap}
+          highlights={heat}
+        />
       </section>
 
+      {/* Today's logs */}
       {todayLogs.length > 0 && (
         <section className="pp-card">
-          <h2 className="mb-3 text-sm font-semibold text-muted-foreground">Today's logs</h2>
+          <h2 className="mb-3 font-display text-base font-medium text-foreground">
+            Today's notes
+          </h2>
           <ul className="divide-y divide-border/60">
             {todayLogs.map((l) => (
               <li key={l.id} className="flex items-center justify-between py-3">
                 <div>
-                  <div className="font-medium">{regionLabel(l.region)}</div>
+                  <div className="font-semibold text-foreground">{regionLabel(l.region)}</div>
                   <div className="text-xs text-muted-foreground">
                     {format(new Date(l.logged_at), "h:mm a")} · {l.pain_type}
                   </div>
                 </div>
                 <span
-                  className="rounded-full px-3 py-1 text-sm font-semibold text-white"
+                  className="rounded-full px-3 py-1 text-sm font-bold text-white"
                   style={{ backgroundColor: intensityColor(l.intensity) }}
                 >
                   {l.intensity}
@@ -171,19 +200,14 @@ export default function Today() {
         </section>
       )}
 
-      {/* Floating CTA */}
-      <button
-        onClick={() => setOpen(true)}
-        className="fixed bottom-24 left-1/2 z-20 -translate-x-1/2 rounded-full bg-gradient-warm px-6 py-4 text-base font-semibold text-primary-foreground shadow-glow transition-transform active:scale-95"
-        aria-label="Log pain"
-      >
-        <span className="inline-flex items-center gap-2">
-          <Plus className="h-5 w-5" strokeWidth={2.6} />
-          Log pain
-        </span>
-      </button>
+      <QuickLogPopover
+        region={activeRegion}
+        onClose={() => setActiveRegion(null)}
+        onSaved={handleSaved}
+        onMoreDetails={handleMoreDetails}
+      />
 
-      <LogSheet open={open} onOpenChange={setOpen} onLogged={load} />
+      <LogSheet open={sheetOpen} onOpenChange={setSheetOpen} onLogged={load} />
     </div>
   );
 }
@@ -204,14 +228,14 @@ function StatCard({
   tint?: string;
 }) {
   return (
-    <div className="rounded-2xl border border-border/60 bg-card p-3 shadow-soft">
-      <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-muted-foreground">
+    <div className="rounded-[22px] border border-border/60 bg-card p-3 shadow-soft">
+      <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
         {Icon && <Icon className="h-3 w-3" />}
         {label}
       </div>
       <div className="mt-1 flex items-baseline gap-1">
         <span
-          className="text-2xl font-semibold tabular-nums"
+          className="font-display text-2xl font-semibold tabular-nums"
           style={{ color: color ?? tint }}
         >
           {value}
