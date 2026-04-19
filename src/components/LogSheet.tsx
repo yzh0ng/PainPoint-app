@@ -40,8 +40,8 @@ export function LogSheet({ open, onOpenChange, onLogged }: Props) {
     }
   }, [open]);
 
-  const next = () => setStep((s) => Math.min(3, (s + 1) as Step));
-  const back = () => setStep((s) => Math.max(0, (s - 1) as Step));
+  const next = () => setStep((s) => (Math.min(3, s + 1) as Step));
+  const back = () => setStep((s) => (Math.max(0, s - 1) as Step));
 
   const handleRegion = (id: string) => {
     setRegion(id);

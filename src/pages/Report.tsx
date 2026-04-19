@@ -3,7 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { format, subDays } from "date-fns";
+import { subDays } from "date-fns";
 import { regionLabel, intensityColor } from "@/lib/painTaxonomy";
 import { Sparkles, Printer, Copy, AlertTriangle, Loader2 } from "lucide-react";
 import { toast } from "sonner";
