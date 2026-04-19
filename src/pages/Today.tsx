@@ -7,6 +7,7 @@ import { QuickLogPopover } from "@/components/QuickLogPopover";
 import { regionLabel, intensityColor } from "@/lib/painTaxonomy";
 import { Flame, TrendingDown, Minus, TrendingUp } from "lucide-react";
 import { format, isToday, subDays } from "date-fns";
+import { cn } from "@/lib/utils";
 
 type Log = {
   id: string;
@@ -20,6 +21,7 @@ export default function Today() {
   const { user } = useAuth();
   const [sheetOpen, setSheetOpen] = useState(false);
   const [activeRegion, setActiveRegion] = useState<string | null>(null);
+  const [bodyView, setBodyView] = useState<"front" | "back">("front");
   const [name, setName] = useState<string | null>(null);
   const [logs, setLogs] = useState<Log[]>([]);
 
@@ -62,13 +64,7 @@ export default function Today() {
     return s;
   }, [logs]);
 
-  const heat = useMemo(() => {
-    const m: Record<string, number> = {};
-    for (const l of todayLogs) {
-      m[l.region] = Math.max(m[l.region] ?? 0, l.intensity);
-    }
-    return m;
-  }, [todayLogs]);
+  // (heatmap on the figure removed — keeps the character clean and cute)
 
   const avgToday = todayLogs.length
     ? Math.round((todayLogs.reduce((s, l) => s + l.intensity, 0) / todayLogs.length) * 10) / 10
