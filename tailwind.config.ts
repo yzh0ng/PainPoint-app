@@ -13,20 +13,19 @@ export default {
     extend: {
       fontFamily: {
         sans: [
+          "Nunito",
           "ui-rounded",
           "-apple-system",
           "BlinkMacSystemFont",
-          "Inter",
           "Segoe UI",
           "Roboto",
           "sans-serif",
         ],
         display: [
-          "ui-rounded",
-          "-apple-system",
-          "BlinkMacSystemFont",
-          "Inter",
-          "sans-serif",
+          "Fraunces",
+          "ui-serif",
+          "Georgia",
+          "serif",
         ],
       },
       colors: {
